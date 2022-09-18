@@ -1,0 +1,10 @@
+# main dependencies
+jsf
+jsonschema
+fastapi
+
+# dev dependencies
+autopep8
+pylint
+pytest
+requests
