@@ -8,7 +8,7 @@ COMPOSE_BIN = $(shell command -v docker-compose 2> /dev/null)
 
 .PHONY : help build-image \
          pull shell install \
-         up down
+         up down test
 .SILENT : help
 .DEFAULT_GOAL : help
 
@@ -22,15 +22,18 @@ install: ## Install all app dependencies
 shell: ## Start shell into web container
 	$(COMPOSE_BIN) run web sh
 
-build-image:
+build-image: ## Build current image
 	$(DOCKER_BIN) build -f ./Dockerfile . -t $(IMAGE_NAME)
 
-up:
+up: ## Start all containers
 	$(COMPOSE_BIN) up --detach --remove-orphans
 	@printf "\n   \e[30;43m %s \033[0m\n\n" 'Server started: <http://127.0.0.1:8000>'
 
-down:
+down: ## Extinguish containers
 	$(COMPOSE_BIN) down
+
+test: ## Run tests
+	$(COMPOSE_BIN) run web pytest
 
 pull: ## Pull latest images
 	$(COMPOSE_BIN) pull
