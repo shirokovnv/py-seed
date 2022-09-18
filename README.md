@@ -1,5 +1,7 @@
 # py-seed
 
+![ci.yml][link-ci]
+
 Minimalistic data seeder, written in python.
 
 The service generates a list of dummy data from [JSON schema](https://json-schema.org/) provided in single API method.
@@ -77,6 +79,7 @@ curl --location --request POST 'http://localhost:8000/seeds' \
 
 MIT. Please see the [license file](LICENSE.md) for more information.
 
+[link-ci]: https://github.com/shirokovnv/py-seed/actions/workflows/ci.yml/badge.svg
 [link-docker]: https://www.docker.com/
 [link-make]: https://www.gnu.org/software/make/manual/make.html
 [link-faker]: https://github.com/json-schema-faker/json-schema-faker
