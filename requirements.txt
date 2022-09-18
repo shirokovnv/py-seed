@@ -2,6 +2,7 @@
 jsf
 jsonschema
 fastapi
+uvicorn
 
 # dev dependencies
 autopep8
