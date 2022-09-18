@@ -30,7 +30,7 @@ Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 
 ## Usage
 
-**Make a post request to `http://localhost:8000/seeds`**
+**Make a post request to** [localhost:8000/seeds](http://localhost:8000/seeds)
 
 _Options_:
 
