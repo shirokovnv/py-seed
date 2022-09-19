@@ -22,7 +22,7 @@ class AbstractFormatter(ABC):
         self._schema_title = schema_title
 
     @abstractmethod
-    def format(self, json_data: list) -> dict[str, list]:
+    def format(self, json_data: list) -> list | dict[str, list]:
         """
         Format incoming data.
 
@@ -37,7 +37,7 @@ class JsonFormatter(AbstractFormatter):
     JSON data formatter.
     """
 
-    def format(self, json_data: list) -> list | dict[str, list]:
+    def format(self, json_data: list) -> dict[str, list]:
         """
         Format json data.
 
