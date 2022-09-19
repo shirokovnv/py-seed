@@ -47,9 +47,7 @@ class JsonFormatter(AbstractFormatter):
         Returns:
             key-value pair, where key is `schema title` and value is `json_data`
         """
-        return {
-            '{0}'.format(self._schema_title): json_data
-        }
+        return {'{0}'.format(self._schema_title): json_data}
 
 
 class SQLFormatter(AbstractFormatter):
@@ -71,8 +69,12 @@ class SQLFormatter(AbstractFormatter):
 
     def _make_sql_statement(self, json_element: dict) -> str:
         json_keys = ','.join(json_element.keys())
-        json_values = ','.join(map(self._parse_json_value, json_element.values()))
-        return 'INSERT INTO {0} ({1}) VALUES({2});'.format(self._schema_title, json_keys, json_values)
+        json_values = ','.join(
+            map(self._parse_json_value, json_element.values())
+        )
+        return 'INSERT INTO {0} ({1}) VALUES({2});'.format(
+            self._schema_title, json_keys, json_values
+        )
 
     def _parse_json_value(self, json_value) -> str:
         if isinstance(json_value, int | float):
