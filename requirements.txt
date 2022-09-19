@@ -6,6 +6,7 @@ uvicorn
 
 # dev dependencies
 autopep8
+flake8
 pylint
 pytest
 requests

@@ -17,7 +17,7 @@ async def seeds(info: Request):
     Returns a bunch of dummy data based on JSON schema.
 
     _Options:_
-    
+
     - `format`: **sql** or **json** (default)
 
     - `count`: number in range(1..100)

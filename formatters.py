@@ -45,8 +45,8 @@ class SQLFormatter(AbstractFormatter):
     def format(self, json_list: list) -> dict[str, list]:
         """
         For every element in the list returns INSERT SQL QUERY.
-        The name of the table is equal to provided key name and the values matched the
-        parameters from the JSON object.
+        The name of the table is equal to provided key name and the values
+        matched the parameters from the JSON object.
         """
         return list(map(self.__make_sql_statement, json_list))
 
