@@ -6,7 +6,6 @@ uvicorn
 
 # dev dependencies
 autopep8
-flake8
-pylint
+wemake-python-styleguide
 pytest
 requests

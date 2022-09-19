@@ -2,57 +2,80 @@
 General API for generating dummy data.
 """
 import json
+
+from fastapi import FastAPI, HTTPException, Request, status
 from jsf import JSF
 from jsonschema import Draft7Validator
-from fastapi import FastAPI, Request, HTTPException
+
 from formatters import JsonFormatter, SQLFormatter
-from schema import SCHEMA
+from schema import req_schema
 
 app = FastAPI()
 
 
-@app.post("/seeds")
-async def seeds(info: Request):
+@app.post('/seeds')
+async def seeds(request: Request):
     """
-    Returns a bunch of dummy data based on JSON schema.
+    Seed API endpoint.
 
-    _Options:_
+    Args:
+        request: A JSON request
 
-    - `format`: **sql** or **json** (default)
+            _Options:_
 
-    - `count`: number in range(1..100)
+            - `format`: **sql** or **json** (default)
 
-    - `schema`: JSON schema
+            - `count`: number in range(1..100)
+
+            - `schema`: JSON schema
+
+    Returns:
+        A list of dummy data based on JSON schema.
+
+    Raises:
+        HTTPException: Mostly with status=422.
     """
     try:
-        req_info = json.loads(await info.body())
-    except (TypeError, ValueError) as exception:
-        raise HTTPException(
-            status_code=422, detail="Not a valid JSON") from exception
+        req_info = json.loads(await request.body())
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Not a valid JSON') from exc
 
-    validator = Draft7Validator(SCHEMA)
+    validator = Draft7Validator(req_schema)
     errors = sorted(validator.iter_errors(req_info), key=str)
 
-    if len(errors) > 0:
-        messages = list(map(lambda e: e.json_path + ": " + e.message, errors))
-        raise HTTPException(status_code=422, detail={"messages": messages})
+    if errors:
+        messages = ['{0}:{1}'.format(error.json_path, error.message) for error in errors]
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail={'messages': messages})
 
     try:
-        faker = JSF(req_info["schema"])
-    except Exception as exception:
-        raise HTTPException(
-            status_code=422, detail="Cannot parse schema") from exception
+        faker = JSF(req_info['schema'])
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Cannot parse schema') from exc
 
-    data = [faker.generate() for _ in range(0, req_info["count"])]
+    json_data = [faker.generate() for _ in range(0, req_info['count'])]
 
-    match req_info["format"]:
-        case None | "json":
-            formatter = JsonFormatter(req_info["schema"]["title"])
+    formatter = _choose_formatter(req_info['format'], req_info['schema']['title'])
 
-        case "sql":
-            formatter = SQLFormatter(req_info["schema"]["title"])
+    return formatter.format(json_data)
+
+
+def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | SQLFormatter:
+    """
+    Choose formatter by user input format and schema title.
+
+    Args:
+        input_format: The format of data output
+        schema_title: The name of the schema
+
+    Returns:
+        Json or SQL formatter.
+    """
+    match input_format:
+        case None | 'json':
+            return JsonFormatter(schema_title)
+
+        case 'sql':
+            return SQLFormatter(schema_title)
 
         case _:
-            raise HTTPException(status_code=422, detail="Not a valid format")
-
-    return formatter.format(data)
+            return JsonFormatter(schema_title)
