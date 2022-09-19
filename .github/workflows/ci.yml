@@ -30,6 +30,8 @@ jobs:
           flake8 .
       - name: wemake-python-styleguide
         uses: wemake-services/wemake-python-styleguide
+        with:
+          path: '.'
       - name: Test with pytest
         run: |
           pytest
