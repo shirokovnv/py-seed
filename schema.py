@@ -10,9 +10,9 @@ SCHEMA = {
         "schema": {
             "type": "object",
             "properties": {
-                    "title": {
-                        "type": "string"
-                    }
+                "title": {
+                    "type": "string"
+                }
             },
             "required": ["title"],
         },
