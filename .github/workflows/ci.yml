@@ -25,12 +25,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi       
-      - name: Style with flake8
+      - name: Style with flake8 and wemake-python-styleguide
         run: |
           flake8 .
-      - name: Lint with pylint
-        run: |
-          find . -name '*.py' -exec pylint {} \;
       - name: Test with pytest
         run: |
           pytest
