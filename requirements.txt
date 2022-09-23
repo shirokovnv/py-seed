@@ -1,11 +1,11 @@
 # main dependencies
+fastapi
 jsf
 jsonschema
-fastapi
 uvicorn
 
 # dev dependencies
 autopep8
-wemake-python-styleguide
 pytest
 requests
+wemake-python-styleguide

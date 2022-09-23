@@ -22,7 +22,7 @@ class AbstractFormatter(ABC):
         self._schema_title = schema_title
 
     @abstractmethod
-    def format(self, json_data: list) -> list | dict[str, list]:
+    def format(self, json_data: list[dict[str, object]]) -> list[str] | dict[str, object]:
         """
         Format incoming data.
 
@@ -37,7 +37,7 @@ class JsonFormatter(AbstractFormatter):
     JSON data formatter.
     """
 
-    def format(self, json_data: list) -> dict[str, list]:
+    def format(self, json_data: list[dict[str, object]]) -> dict[str, object]:
         """
         Format json data.
 
@@ -55,7 +55,7 @@ class SQLFormatter(AbstractFormatter):
     SQL data formatter.
     """
 
-    def format(self, json_data: list) -> list[str]:
+    def format(self, json_data: list[dict[str, object]]) -> list[str]:
         """
         For every element in the list returns INSERT SQL QUERY.
 
@@ -67,7 +67,7 @@ class SQLFormatter(AbstractFormatter):
         """
         return list(map(self._make_sql_statement, json_data))
 
-    def _make_sql_statement(self, json_element: dict) -> str:
+    def _make_sql_statement(self, json_element: dict[str, object]) -> str:
         json_keys = ','.join(json_element.keys())
         json_values = ','.join(
             map(self._parse_json_value, json_element.values())
@@ -76,7 +76,7 @@ class SQLFormatter(AbstractFormatter):
             self._schema_title, json_keys, json_values
         )
 
-    def _parse_json_value(self, json_value) -> str:
+    def _parse_json_value(self, json_value: object) -> str:
         if isinstance(json_value, int | float):
             return str(json_value)
 

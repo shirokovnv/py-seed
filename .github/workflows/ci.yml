@@ -28,6 +28,9 @@ jobs:
       - name: Style with flake8 and wemake-python-styleguide
         run: |
           flake8 .
+      - name: Typechecking with mypy
+        run: |
+          mypy --strict --config-file setup.cfg .
       - name: Test with pytest
         run: |
           pytest

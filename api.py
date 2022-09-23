@@ -4,6 +4,7 @@ General API for generating dummy data.
 import json
 
 from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from jsf import JSF
 from jsonschema import Draft7Validator
 
@@ -14,7 +15,7 @@ app = FastAPI()
 
 
 @app.post('/seeds')
-async def seeds(request: Request):
+async def seeds(request: Request) -> JSONResponse:
     """
     Seed API endpoint.
 
@@ -56,7 +57,7 @@ async def seeds(request: Request):
 
     formatter = _choose_formatter(req_info['format'], req_info['schema']['title'])
 
-    return formatter.format(json_data)
+    return JSONResponse(formatter.format(json_data))
 
 
 def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | SQLFormatter:

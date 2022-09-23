@@ -11,7 +11,7 @@ from schema import req_schema
 client = TestClient(app)
 
 
-def test_read_seeds_ok():
+def test_read_seeds_ok() -> None:
     """
     Testing 200 response.
     """
@@ -26,7 +26,7 @@ def test_read_seeds_ok():
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_read_seeds_unprocessable_entity():
+def test_read_seeds_unprocessable_entity() -> None:
     """
     Testing 422 response.
     """
