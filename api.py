@@ -55,7 +55,7 @@ async def seeds(request: Request) -> JSONResponse:
 
     json_data = [faker.generate() for _ in range(0, req_info['count'])]
 
-    formatter = _choose_formatter(req_info['format'], req_info['schema']['title'])
+    formatter = _choose_formatter(req_info.get('format'), req_info['schema']['title'])
 
     return JSONResponse(formatter.format(json_data))
 
@@ -72,9 +72,6 @@ def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | S
         Json or SQL formatter.
     """
     match input_format:
-        case None | 'json':
-            return JsonFormatter(schema_title)
-
         case 'sql':
             return SQLFormatter(schema_title)
 
