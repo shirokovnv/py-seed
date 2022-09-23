@@ -6,6 +6,8 @@ uvicorn
 
 # dev dependencies
 autopep8
+flake8
+mypy
 pytest
 requests
 wemake-python-styleguide
