@@ -59,7 +59,7 @@ async def seeds(request: Request) -> Response:
 
     if isinstance(formatter, XMLFormatter):
         return Response(formatter.format(json_data), media_type='application/xml')
-                
+
     return JSONResponse(formatter.format(json_data))
 
 
