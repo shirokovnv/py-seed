@@ -2,8 +2,8 @@
 Provides formatting tools for the list of json objects.
 """
 
-import json
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class AbstractFormatter(ABC):
@@ -22,7 +22,7 @@ class AbstractFormatter(ABC):
         self._schema_title = schema_title
 
     @abstractmethod
-    def format(self, json_data: list[dict[str, object]]) -> list[str] | dict[str, object]:
+    def format(self, json_data: list[dict[str, object]]) -> str | list[str] | dict[str, object]:
         """
         Format incoming data.
 
@@ -50,37 +50,53 @@ class JsonFormatter(AbstractFormatter):
         return {'{0}'.format(self._schema_title): json_data}
 
 
-class SQLFormatter(AbstractFormatter):
+class XMLFormatter(AbstractFormatter):
     """
-    SQL data formatter.
+    XML data formatter.
     """
 
-    def format(self, json_data: list[dict[str, object]]) -> list[str]:
+    def format(self, json_data: list[dict[str, object]]) -> str:
         """
-        For every element in the list returns INSERT SQL QUERY.
+        Convert json object to XML string.
 
         Args:
             json_data: The data you need to format.
 
         Returns:
-            A list of insert SQL statements.
+            XML SOAP response
         """
-        return list(map(self._make_sql_statement, json_data))
+        capitalized_title = self._schema_title[0].upper() + self._schema_title[1:]
 
-    def _make_sql_statement(self, json_element: dict[str, object]) -> str:
-        json_keys = ','.join(json_element.keys())
-        json_values = ','.join(
-            map(self._parse_json_value, json_element.values())
-        )
-        return 'INSERT INTO {0} ({1}) VALUES({2});'.format(
-            self._schema_title, json_keys, json_values
-        )
+        return """<?xml version=\"1.0\" encoding=\"utf-8\"?>
+            <soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
+                <soap:Body>
+                    <{0}>
+                        {1}
+                    </{0}>
+                </soap:Body>
+            </soap:Envelope>""".format(capitalized_title, self._json_to_xml(json_data))
 
-    def _parse_json_value(self, json_value: object) -> str:
-        if isinstance(json_value, int | float):
-            return str(json_value)
+    def _json_to_xml(self, json_object: Any) -> str:
+        result_list = []
 
-        if isinstance(json_value, str):
-            return "'{0}'".format(json_value)
+        json_object_type = type(json_object)
 
-        return "'{0}'".format(json.dumps(json_value))
+        if json_object_type is list:
+            for sub_element in json_object:
+                result_list.append(self._json_to_xml(sub_element))
+
+            return ''.join(result_list)
+
+        if json_object_type is dict:
+            result_list.append('<Item>\r\t')
+            for tag_name in json_object:
+                sub_object = json_object[tag_name]
+                result_list.append('<{0}>'.format(tag_name[0].upper() + tag_name[1:]))
+                result_list.append(self._json_to_xml(sub_object))
+                result_list.append('</{0}>'.format(tag_name[0].upper() + tag_name[1:]))
+
+            result_list.append('</Item>')
+
+            return ''.join(result_list)
+
+        return '{0}'.format(json_object)

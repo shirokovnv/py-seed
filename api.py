@@ -4,18 +4,18 @@ General API for generating dummy data.
 import json
 
 from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from jsf import JSF
 from jsonschema import Draft7Validator
 
-from formatters import JsonFormatter, SQLFormatter
+from formatters import JsonFormatter, XMLFormatter
 from schema import req_schema
 
 app = FastAPI()
 
 
 @app.post('/seeds')
-async def seeds(request: Request) -> JSONResponse:
+async def seeds(request: Request) -> Response:
     """
     Seed API endpoint.
 
@@ -24,7 +24,7 @@ async def seeds(request: Request) -> JSONResponse:
 
             _Options:_
 
-            - `format`: **sql** or **json** (default)
+            - `format`: **xml** or **json** (default)
 
             - `count`: number in range(1..100)
 
@@ -57,10 +57,13 @@ async def seeds(request: Request) -> JSONResponse:
 
     formatter = _choose_formatter(req_info.get('format'), req_info['schema']['title'])
 
+    if isinstance(formatter, XMLFormatter):
+        return Response(formatter.format(json_data), media_type='application/xml')
+
     return JSONResponse(formatter.format(json_data))
 
 
-def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | SQLFormatter:
+def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | XMLFormatter:
     """
     Choose formatter by user input format and schema title.
 
@@ -69,11 +72,11 @@ def _choose_formatter(input_format: str, schema_title: str) -> JsonFormatter | S
         schema_title: The name of the schema
 
     Returns:
-        Json or SQL formatter.
+        Json or XML formatter.
     """
     match input_format:
-        case 'sql':
-            return SQLFormatter(schema_title)
+        case 'xml':
+            return XMLFormatter(schema_title)
 
         case _:
             return JsonFormatter(schema_title)
