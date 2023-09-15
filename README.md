@@ -34,7 +34,7 @@ Now you can visit [`localhost:8000`](http://localhost:8000) from your browser.
 
 _Options_:
 
-- `format`: Wether response data returned in `json` or `sql` (defaults to `json`)
+- `format`: Wether response data returned in `json` or `xml` (defaults to `json`)
 - `count`: The number of seeds (min: 1, max: 100)
 - `schema`: your JSON schema
 
@@ -66,12 +66,12 @@ curl --location --request POST 'http://localhost:8000/seeds' \
 
 ```json
 {
-    "products": [
-        {
-            "productId": 9963,
-            "title": "molestias, Hic"
-        }
-    ]
+  "products": [
+    {
+      "productId": 9963,
+      "title": "molestias, Hic"
+    }
+  ]
 }
 ```
 

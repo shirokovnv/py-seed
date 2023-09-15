@@ -25,7 +25,7 @@ req_schema = {
             'type': 'string',
             'enum': [
                 'json',
-                'sql'
+                'xml'
             ]
         }
     },
