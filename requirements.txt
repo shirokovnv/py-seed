@@ -10,4 +10,5 @@ flake8
 mypy
 pytest
 requests
+httpx
 wemake-python-styleguide
