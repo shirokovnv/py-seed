@@ -5,6 +5,8 @@ Provides formatting tools for the list of json objects.
 from abc import ABC, abstractmethod
 from typing import Any
 
+JsonDataType = str | list[str] | dict[str, object]
+
 
 class AbstractFormatter(ABC):
     """
@@ -22,7 +24,7 @@ class AbstractFormatter(ABC):
         self._schema_title = schema_title
 
     @abstractmethod
-    def format(self, json_data: list[dict[str, object]]) -> str | list[str] | dict[str, object]:
+    def format(self, json_data: list[dict[str, object]]) -> JsonDataType:
         """
         Format incoming data.
 
@@ -66,15 +68,16 @@ class XMLFormatter(AbstractFormatter):
             XML SOAP response
         """
         capitalized_title = self._schema_title[0].upper() + self._schema_title[1:]
-
-        return """<?xml version=\"1.0\" encoding=\"utf-8\"?>
+        xml_template = """<?xml version=\"1.0\" encoding=\"utf-8\"?>
             <soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
                 <soap:Body>
                     <{0}>
                         {1}
                     </{0}>
                 </soap:Body>
-            </soap:Envelope>""".format(capitalized_title, self._json_to_xml(json_data))
+            </soap:Envelope>"""
+
+        return xml_template.format(capitalized_title, self._json_to_xml(json_data))
 
     def _json_to_xml(self, json_object: Any) -> str:
         result_list = []
@@ -89,11 +92,13 @@ class XMLFormatter(AbstractFormatter):
 
         if json_object_type is dict:
             result_list.append('<Item>\r\t')
-            for tag_name in json_object:
+            for tag_name in json_object.items():
                 sub_object = json_object[tag_name]
-                result_list.append('<{0}>'.format(tag_name[0].upper() + tag_name[1:]))
+                open_tag = '<{0}>'.format(tag_name[0].upper() + tag_name[1:])
+                close_tag = '</{0}>'.format(tag_name[0].upper() + tag_name[1:])
+                result_list.append(open_tag)
                 result_list.append(self._json_to_xml(sub_object))
-                result_list.append('</{0}>'.format(tag_name[0].upper() + tag_name[1:]))
+                result_list.append(close_tag)
 
             result_list.append('</Item>')
 
